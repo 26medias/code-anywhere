@@ -1,0 +1,54 @@
+{
+    "projects": {
+        "7c5b5178": {
+            "id": "7c5b5178",
+            "name": "Code Anywhere",
+            "directory": "C:\\code\\code-anywhere",
+            "ignore": [
+                "node_modules",
+                ".git"
+            ]
+        },
+        "989f2f7e": {
+            "id": "989f2f7e",
+            "name": "rpi_vision",
+            "directory": "C:\\code\\rpi_vision"
+        }
+    },
+    "settings": {
+        "sidebar": "files",
+        "project": "7c5b5178",
+        "file": "handler.js"
+    },
+    "lang": {
+        "javascript": {
+            "ext": [
+                "js",
+                "jsx",
+                "ts"
+            ],
+            "color": "#2196F3"
+        },
+        "json": {
+            "ext": [
+                "json"
+            ],
+            "color": "#E91E63"
+        },
+        "python": {
+            "ext": [
+                "py"
+            ],
+            "color": "#9C27B0"
+        },
+        "markdown": {
+            "ext": [
+                "md"
+            ],
+            "color": "#90A4AE"
+        }
+    },
+    "files": [
+        "handler.js"
+    ]
+}

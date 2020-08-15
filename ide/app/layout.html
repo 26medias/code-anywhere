@@ -1,0 +1,384 @@
+<div>
+	<!-- App Content -->
+	<md-content>
+		
+		<div class="app-header" style="-webkit-app-region: drag">
+			<div class="title">
+				<span ng-if="main.file_loading">
+					<span class="fas fa-spin fa-spinner"></span>
+				</span>
+				Code Anywhere
+			</div>
+		</div>
+		
+		<div layout="row">
+			<!-- Sidebar -->
+			<md-sidenav md-component-id="left" md-is-locked-open="$mdMedia('min-width: 333px')" class="md-sidenav-left" style="height:{{core.contentHeight}}px">
+				<md-content>
+					<div class="horizontal-tabs" style="height:{{core.contentHeight}}px">
+						<div class="tabs">
+							<div class="tab" ng-class="{active:core.data.settings.settings.sidebar=='projects'}" ng-click="core.data.settings.settings.sidebar='projects'">
+								<span class="fas fa-stream"></span>
+								<md-tooltip md-direction="right">Projects</md-tooltip>
+							</div>
+							<div class="tab" ng-class="{active:core.data.settings.settings.sidebar=='files'}" ng-click="core.data.settings.settings.sidebar='files'" ng-if="core.data.settings.settings.project">
+								<span class="fas fa-folder-open"></span>
+								<md-tooltip md-direction="right">Files</md-tooltip>
+							</div>
+							
+						</div>
+						<div class="tabs-content">
+							<div style="height:{{core.contentHeight}}px">
+								<div app-project-list ng-if="core.data.settings.settings.sidebar=='projects'"></div>
+								<div app-project-files ng-if="core.data.settings.settings.sidebar=='files'"></div>
+							</div>
+						</div>
+					</div>
+				</md-content>
+			</md-sidenav>
+			
+			<!-- Directives -->
+			<md-content layout-fill style="height:{{core.contentHeight}}px;overflow-y:hidden;" ng-if="core.data.settings">
+				<!-- Open Files Tabs -->
+				<div style="padding-right:145px;">
+					<div class="project-tabs" id="projects-tabs">
+						<div class="ui-tab" ng-repeat="file in core.data.settings.files" ng-class="{active:tabs.is(file)}" ng-click="tabs.select(file)">
+							{{file}}
+							<span class="close" ng-click="core.editor.close(file);$event.stopPropagation();">
+								<span class="fas fa-times"></span>
+							</span>
+						</div>
+						<!--<div class="action" ng-click="core.dialog.open('new-project')">
+							<div>
+								<span class="fas fa-plus"></span> New
+							</div>
+						</div>-->
+					</div>
+				</div>
+				
+				<div class="floating-button hover-menu right" style="top:{{plot.bounds.top+5}}px;">
+					<span class="fas fa-ellipsis-h"></span>
+					
+					<div class="hover-menu-container">
+						<div>
+							<div class="arrow"></div>
+							<div class="menu">
+								<div ng-click="core.dialog.open('new-project')">
+									<span class="fas fa-plus"></span> New file
+								</div>
+								<div class="sep"></div>
+								<div ng-click="core.editor.current.save()">
+									<span class="fas fa-save"></span> Save
+								</div>
+								<div ng-click="core.editor.current.saveAs()">
+									<span class="fas fa-save"></span> Save As
+								</div>
+								<div class="sep"></div>
+								<div ng-click="core.editor.current.remove()">
+									<span class="fas fa-trash"></span> Remove
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				
+				<!-- Projects -->
+				<div app-editor ng-if="!main.loading && core.page=='projects' && core.data.settings.files.length>0"></div>
+			</md-content>
+		</div>
+	</<md-content>
+	
+		
+		
+	<!-- Dialog: Prompt -->
+	<div class="app-dialog" ng-if="core.dialog.status['prompt']" ng-class="{front:core.dialog.front=='prompt'}">
+		<div class="bg"></div>
+		<div class="overlay">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('prompt')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div>
+					<div class="app-dialog-box">
+						<div class="header">
+							{{core.dialog.payload['prompt'].title}}
+						</div>
+						<div class="body" style="max-height:500px;overflow-y:auto;">
+							<table>
+								<tbody>
+									<tr>
+										<td>
+											{{core.dialog.payload['prompt'].prompt}}
+										</td>
+										<td>
+											<input type="text" ng-model="core.dialog.payload['prompt'].value" />
+										</td>
+									</tr>
+								</tbody>
+							</table>
+							<md-button class="" ng-click="core.dialog.payload['prompt'].callback(core.dialog.payload['prompt'].value);core.dialog.close('prompt')">
+								<md-icon md-font-icon="fas fa-save"></md-icon> Save
+							</md-button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+		
+		
+	<!-- Dialog: Confirm -->
+	<div class="app-dialog" ng-if="core.dialog.status['confirm']" ng-class="{front:core.dialog.front=='confirm'}">
+		<div class="bg"></div>
+		<div class="overlay">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('confirm')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div>
+					<div class="app-dialog-box">
+						<div class="header">
+							{{core.dialog.payload['confirm'].title}}
+						</div>
+						<div class="body" style="max-height:500px;overflow-y:auto;">
+							<p>{{core.dialog.payload['confirm'].text}}</p>
+							
+							<md-button class="" ng-click="core.dialog.close('confirm')">
+								<md-icon md-font-icon="fas fa-undo"></md-icon> Cancel
+							</md-button>
+							<md-button class="" ng-click="core.dialog.payload['confirm'].ok();core.dialog.close('confirm')">
+								<md-icon md-font-icon="fas fa-check"></md-icon> Ok
+							</md-button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+		
+		
+	<!-- Dialog: Ajax Error -->
+	<div class="app-dialog" ng-if="core.dialog.status['ajax-error']" ng-class="{front:core.dialog.front=='ajax-error'}">
+		<div class="bg"></div>
+		<div class="overlay">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('ajax-error')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div>
+					<div class="app-dialog-box">
+						<div class="header">
+							Request Failed
+						</div>
+						<div class="body" style="max-height:500px;overflow-y:auto;">
+							{{core.dialog.status['ajax-error'].req.url}}
+							<pre>{{core.dialog.status['ajax-error'].error}}</pre>
+							
+							<pre>{{core.dialog.status['ajax-error']|json}}</pre>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- Dialog: Error -->
+	<div class="app-dialog" ng-if="core.dialog.status['error']" ng-class="{front:core.dialog.front=='error'}">
+		<div class="bg"></div>
+		<div class="overlay">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('error')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div>
+					<div class="app-dialog-box">
+						<div class="header">
+							Error
+						</div>
+						<div class="body" style="max-height:500px;overflow-y:auto;">
+							{{error.message}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	<!-- Dialog: Drag Add To Chart -->
+	<div class="app-dialog" ng-if="core.dialog.status['drag-chart']" ng-class="{front:core.dialog.front=='drag-chart'}">
+		<div class="bg"></div>
+		<div class="overlay medium">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('drag-chart')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div class="app-dialog-box">
+					<div class="header">
+						How do you want to display your data?
+					</div>
+						
+					<div class="chart-types-selector">
+						<div ng-repeat="type in core.qs.chart.dragChartTypes" ng-click="core.qs.chart.plot.addFromDrag(type.value, core.dialog.payload['drag-chart'])">
+							<div>
+								<img ng-src="app/static/images/chart-types/{{type.value}}.png" alt="{{type.value}}" />
+								<div>
+									<div>{{type.label}}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!--
+					<div class="body">
+						<div class="footer" ng-click="chart.addDragChart()" ng-class="{disabled:!chart.isDragChartValid()}">
+							<span class="fas fa-plus"></span> Add
+						</div>
+					</div>
+					-->
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	<!-- Dialog: New Project -->
+	<div class="app-dialog" ng-if="core.dialog.status['new-project']" ng-class="{front:core.dialog.front=='new-project'}">
+		<div class="bg"></div>
+		<div class="overlay medium">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('new-project')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div class="app-dialog-box">
+					<div class="header">
+						New Project
+					</div>
+					<div class="project-types-selector">
+						<div ng-click="core.qs.project.create('algo')" style="background-image:url('app/static/images/project-types/_algo.png')"></div>
+						<div ng-click="core.qs.project.create('dashboard')" style="background-image:url('app/static/images/project-types/_dashboard.png')"></div>
+						<div ng-click="core.qs.project.create('ml')" style="background-image:url('app/static/images/project-types/ml.jpg')"></div>
+					</div>
+					<!--<div class="chart-types-selector">
+						<div ng-click="core.qs.project.create('algo')">
+							<div>
+								<img ng-src="app/static/images/project-types/algo.png" />
+								<div>
+									<div>Algorithm</div>
+								</div>
+							</div>
+						</div>
+						<div ng-click="core.qs.project.create('dashboard')">
+							<div>
+								<img ng-src="app/static/images/project-types/dashboard.png" />
+								<div>
+									<div>Dashboard</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="body">
+						<div class="footer" ng-click="chart.addDragChart()" ng-class="{disabled:!chart.isDragChartValid()}">
+							<span class="fas fa-plus"></span> Add
+						</div>
+					</div>
+					-->
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	<!-- Dialog: Select algo from project (widget) -->
+	<div class="app-dialog" ng-if="core.dialog.status['new-widget']" ng-class="{front:core.dialog.front=='new-widget'}">
+		<div class="bg"></div>
+		<div class="overlay medium">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('new-widget')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div class="app-dialog-box">
+					<div class="header">
+						Add a new widget
+					</div>
+					<div class="body">
+						<div algo-column-selector="core.dialog.payload['new-widget'].project.datasources" options="core.dialog.payload['new-widget'].options" on-select="core.dialog.payload['new-widget'].onSelect"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	<!-- Dialog: Select algo from project -->
+	<div class="app-dialog" ng-if="core.dialog.status['select-algo-columns']" ng-class="{front:core.dialog.front=='select-algo-columns'}">
+		<div class="bg"></div>
+		<div class="overlay medium">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('select-algo-columns')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div class="app-dialog-box">
+					<div class="header">
+						Features Selector
+					</div>
+					<div class="body">
+						<div algo-column-selector="core.dialog.payload['select-algo-columns'].project" options="core.dialog.payload['select-algo-columns'].options" on-select="core.dialog.payload['select-algo-columns'].onSelect"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	<!-- Dialog: Select algo from project -->
+	<div class="app-dialog" ng-if="core.dialog.status['select-algo']" ng-class="{front:core.dialog.front=='select-algo'}">
+		<div class="bg"></div>
+		<div class="overlay medium">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('select-algo')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div class="app-dialog-box">
+					<div class="header">
+						Features Selector
+					</div>
+					<div class="body">
+						<div algo-selector="core.dialog.payload['select-algo'].project" options="core.dialog.payload['select-algo'].options" on-select="core.dialog.payload['select-algo'].onSelect"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	<!-- Dialog: Settings -->
+	<div class="app-dialog x-large" ng-if="core.dialog.status['app-settings']" ng-class="{front:core.dialog.front=='app-settings'}">
+		<div class="bg"></div>
+		<div class="overlay medium">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('app-settings')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div class="app-dialog-box">
+					<div class="header">
+						Settings
+					</div>
+					<div class="body">
+						<div app-settings></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,48 @@
+<div class="project-list">
+	
+	<div layout="row" layout-align="center center" ng-if="main.loading" style="height:500px">
+		<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+	</div>
+	
+	<div ng-if="!main.loading && tabs.is('list')">
+		<div class="project" ng-repeat="(pid, project) in core.data.settings.projects" ng-click="main.open(pid)" ng-class="{active:core.data.settings.settings.project==pid}">
+			<div class="name">
+				{{project.name}}
+			</div>
+			<div class="directory">
+				{{project.directory}}
+			</div>
+		</div>
+		
+		<div class="btn" ng-click="tabs.select('create')">
+			<span class="fas fa-plus"></span> New Project
+		</div>
+	</div>
+	
+	<div ng-if="!main.loading && tabs.is('create')">
+		
+		<div class="ui-form">
+			<div>
+				<div class="label">
+					Project Name
+				</div>
+				<div class="value">
+					<input type="text" ng-model="main.form.name" />
+				</div>
+			</div>
+			<div>
+				<div class="label">
+					Project Directory
+				</div>
+				<div class="value">
+					<input type="text" ng-model="main.form.directory" />
+				</div>
+			</div>
+		</div>
+		
+		<div class="btn" ng-click="main.create()">
+			<span class="fas fa-check"></span> Create
+		</div>
+	</div>
+	
+</div>

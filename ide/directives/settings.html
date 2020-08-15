@@ -1,0 +1,19 @@
+<div>
+	<table class="app-settings" cellspacing="0">
+		<tbody>
+			<tr ng-repeat="project in core.projects" class="md-ink-ripple md-clickable" role="listitem">
+				<td>
+					{{project.name}}
+				</td>
+				<td>
+					{{core.local_settings.repositories[project.settings.repository].directory}}
+				</td>
+				<td style="text-align:right">
+					<md-button class="md-raised" ng-click="main.selectDirectory(project)" ng-class="{'md-primary':core.local_settings.repositories[project.settings.repository].directory!=''}">
+						<span class="fas fa-folder"></span> Select folder
+					</md-button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>

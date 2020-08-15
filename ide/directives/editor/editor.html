@@ -1,0 +1,11 @@
+<div class="editor-ui">
+	
+	<div layout="row" layout-align="center center" ng-if="main.loading" style="height:500px">
+		<md-progress-circular md-mode="indeterminate"></md-progress-circular>
+	</div>
+	
+	<div ng-if="!main.loading">
+		<div ui-ace="main.settings" ng-model="main.data" style="height:{{core.projectHeight}}px;"></div>
+	</div>
+	
+</div>
