@@ -78,11 +78,6 @@
 			return v.toString(16);
 		});
 	};
-	// Open links in the OS's default browser
-	ftl.prototype.openLink	= function(link) {
-		console.log("openLink", link);
-		shell.openExternal(link);
-	};
 	
 	// Cookies
 	ftl.prototype._setCookie = function(name,value,days) {
@@ -209,6 +204,36 @@
 			// Show the file list
 			window.ftl.data.settings.settings.project	= pid;
 			window.ftl.data.settings.settings.sidebar	= 'files';
+		},
+		create:	function(callback) {
+			if (!window.ftl.data.settings) {
+				return false;
+			}
+			window.ftl.dialog.open('new-file', {
+				callback:	function(filename) {
+					window.Arbiter.inform('file.save.start');
+					// Open the file content
+					window.ftl.apicall({
+						url:		'/api/projects/file/save',
+						params:		{
+							root:	window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].directory,
+							file:	filename,
+							data:	''
+						},
+						callback:	function(response) {
+							// Open the file
+							window.ftl.editor.open(filename, function() {
+								window.Arbiter.inform('file.save.end');
+								window.Arbiter.inform('file.tree.reload');
+								if (callback) {
+									callback();
+								}
+							});
+						}
+					});
+					window.ftl.dialog.close('new-file');
+				}
+			})
 		},
 		open:	function(filename, callback) {
 			if (!window.ftl.data.settings) {

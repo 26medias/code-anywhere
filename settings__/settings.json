@@ -18,7 +18,7 @@
     "settings": {
         "sidebar": "files",
         "project": "7c5b5178",
-        "file": "handler.js"
+        "file": "settings\\settings.json"
     },
     "lang": {
         "javascript": {
@@ -49,6 +49,8 @@
         }
     },
     "files": [
-        "handler.js"
+        "handler.js",
+        "hello.js",
+        "settings\\settings.json"
     ]
 }

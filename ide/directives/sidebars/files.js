@@ -77,6 +77,10 @@
 			
 			$scope.main.init();
 			
+			window.Arbiter.subscribe('file.tree.reload', function() {
+				$scope.main.refresh();
+			});
+			
 			$scope.$on('$destroy', function() {
 				_.each(tokens, function(v,k) {
 					window.Arbiter.unsubscribe(v);

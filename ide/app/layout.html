@@ -63,7 +63,7 @@
 						<div>
 							<div class="arrow"></div>
 							<div class="menu">
-								<div ng-click="core.dialog.open('new-project')">
+								<div ng-click="core.editor.create()">
 									<span class="fas fa-plus"></span> New file
 								</div>
 								<div class="sep"></div>
@@ -119,6 +119,46 @@
 							</table>
 							<md-button class="" ng-click="core.dialog.payload['prompt'].callback(core.dialog.payload['prompt'].value);core.dialog.close('prompt')">
 								<md-icon md-font-icon="fas fa-save"></md-icon> Save
+							</md-button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+		
+		
+	<!-- Dialog: New file -->
+	<div class="app-dialog" ng-if="core.dialog.status['new-file']" ng-class="{front:core.dialog.front=='new-file'}">
+		<div class="bg"></div>
+		<div class="overlay">
+			<div>
+				<div class="dialog-close" ng-click="core.dialog.close('new-file')">
+					Close <span class="fas fa-times"></span>
+				</div>
+				<div>
+					<div class="app-dialog-box">
+						<div class="header">
+							New File
+						</div>
+						<div class="body" style="max-height:500px;overflow-y:auto;">
+							<div class="ui-form">
+								<div>
+									<div>
+										Filename
+									</div>
+									<div>
+										<input type="text" ng-model="core.dialog.payload['new-file'].filename" />
+									</div>
+								</div>
+							</div>
+							
+							<md-button class="" ng-click="core.dialog.close('new-file')">
+								<md-icon md-font-icon="fas fa-undo"></md-icon> Cancel
+							</md-button>
+							<md-button class="" ng-click="core.dialog.payload['new-file'].callback(core.dialog.payload['new-file'].filename)">
+								<md-icon md-font-icon="fas fa-check"></md-icon> Ok
 							</md-button>
 						</div>
 					</div>
