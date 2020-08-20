@@ -42,7 +42,8 @@
 				<!-- Open Files Tabs -->
 				<div style="padding-right:145px;">
 					<div class="project-tabs" id="projects-tabs">
-						<div class="ui-tab" ng-repeat="file in core.data.settings.files" ng-class="{active:tabs.is(file)}" ng-click="tabs.select(file)">
+						<!--<div class="ui-tab" ng-repeat="file in core.data.settings.files" ng-class="{active:tabs.is(file)}" ng-click="tabs.select(file)">-->
+						<div class="ui-tab" ng-repeat="file in core.data.settings.projects[core.data.settings.settings.project].files" ng-class="{active:tabs.is(file)}" ng-click="tabs.select(file)">
 							{{file}}
 							<span class="close" ng-click="core.editor.close(file);$event.stopPropagation();">
 								<span class="fas fa-times"></span>
@@ -84,7 +85,7 @@
 				</div>
 				
 				<!-- Projects -->
-				<div app-editor ng-if="!main.loading && core.page=='projects' && core.data.settings.files.length>0"></div>
+				<div app-editor ng-if="!main.loading && core.page=='projects' && core.data.settings.projects[core.data.settings.settings.project].files.length>0"></div>
 			</md-content>
 		</div>
 	</<md-content>
@@ -130,17 +131,17 @@
 		
 		
 	<!-- Dialog: New file -->
-	<div class="app-dialog" ng-if="core.dialog.status['new-file']" ng-class="{front:core.dialog.front=='new-file'}">
+	<div class="app-dialog" ng-if="core.dialog.status['save-as']" ng-class="{front:core.dialog.front=='save-as'}">
 		<div class="bg"></div>
 		<div class="overlay">
 			<div>
-				<div class="dialog-close" ng-click="core.dialog.close('new-file')">
+				<div class="dialog-close" ng-click="core.dialog.close('save-as')">
 					Close <span class="fas fa-times"></span>
 				</div>
 				<div>
 					<div class="app-dialog-box">
 						<div class="header">
-							New File
+							{{core.dialog.payload['save-as'].title}}
 						</div>
 						<div class="body" style="max-height:500px;overflow-y:auto;">
 							<div class="ui-form">
@@ -149,15 +150,15 @@
 										Filename
 									</div>
 									<div>
-										<input type="text" ng-model="core.dialog.payload['new-file'].filename" />
+										<input type="text" ng-model="core.dialog.payload['save-as'].filename" />
 									</div>
 								</div>
 							</div>
 							
-							<md-button class="" ng-click="core.dialog.close('new-file')">
+							<md-button class="" ng-click="core.dialog.close('save-as')">
 								<md-icon md-font-icon="fas fa-undo"></md-icon> Cancel
 							</md-button>
-							<md-button class="" ng-click="core.dialog.payload['new-file'].callback(core.dialog.payload['new-file'].filename)">
+							<md-button class="" ng-click="core.dialog.payload['save-as'].callback(core.dialog.payload['save-as'].filename)">
 								<md-icon md-font-icon="fas fa-check"></md-icon> Ok
 							</md-button>
 						</div>

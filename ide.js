@@ -124,19 +124,32 @@ core.projects	= {
 			_.each(buffer.files, function(file) {
 				if (file.root !='.' && !roots[file.root]) {
 					roots[file.root]	= true;
+					var state			= {};
+					if (buffer.project.filetree && buffer.project.filetree.opened && buffer.project.filetree.opened[file.root]) {
+						state.opened = true;
+					}
+					if (buffer.project.filetree && buffer.project.filetree.selected == file.root) {
+						state.selected = true;
+					}
 					tree.push({
 						id:		file.root,
 						parent:	path.dirname(file.root)=='.'?'#':path.dirname(file.root),
 						text:	path.basename(file.root),
+						state:	state,
 						data: {
 							type: 'dir'
 						}
 					});
 				}
+				var state			= {};
+				if (buffer.project.filetree && buffer.project.filetree.selected == file.full) {
+					state.selected = true;
+				}
 				tree.push({
 					id:		file.full,
 					parent:	file.root=='.'?'#':file.root,
 					text:	file.filename,
+					state:	state,
 					icon:	"jstree-file",
 					data: {
 						type: 'file'

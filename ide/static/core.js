@@ -197,8 +197,6 @@
 		openProject:	function(pid) {
 			// Select the project
 			window.ftl.data.settings.settings.project = pid;
-			// Close the open files
-			window.ftl.data.settings.files	= [];
 			// Delete the cache
 			window.ftl.data.cache			= {};
 			// Show the file list
@@ -209,7 +207,8 @@
 			if (!window.ftl.data.settings) {
 				return false;
 			}
-			window.ftl.dialog.open('new-file', {
+			window.ftl.dialog.open('save-as', {
+				title:		'New File',
 				callback:	function(filename) {
 					window.Arbiter.inform('file.save.start');
 					// Open the file content
@@ -239,23 +238,26 @@
 			if (!window.ftl.data.settings) {
 				return false;
 			}
+			
+			var project = window.ftl.data.settings.projects[window.ftl.data.settings.settings.project];
+			
 			// Open the file content
 			window.ftl.apicall({
 				url:		'/api/projects/file/open',
 				params:		{
-					root:	window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].directory,
+					root:	project.directory,
 					file:	filename
 				},
 				callback:	function(response) {
 					//console.log("/api/projects/file/open response",response);
 					
-					if (!window.ftl.data.settings.files) {
-						window.ftl.data.settings.files = [];
+					if (!project.files) {
+						project.files = [];
 					}
-					if (!_.contains(window.ftl.data.settings.files, filename)) {
-						window.ftl.data.settings.files.push(filename);
+					if (!_.contains(project.files, filename)) {
+						project.files.push(filename);
 					}
-					window.ftl.data.settings.settings.file	= filename;
+					project.file	= filename;
 					window.ftl.data.cache[filename]			= response.data;
 					if (callback) {
 						callback(response.data);
@@ -264,10 +266,25 @@
 			});
 		},
 		close:	function(filename) {
-			window.ftl.data.settings.files = _.filter(window.ftl.data.settings.files, function(item) {
+			
+			var project = window.ftl.data.settings.projects[window.ftl.data.settings.settings.project];
+			
+			var idx = _.indexOf(project.files, filename);
+			console.log("idx", idx);
+			// Select the next file
+			if (project.files.length>0 && project.file==filename) {
+				if (idx>0) {
+					window.ftl.editor.open(project.files[idx-1]);
+				} else {
+					window.ftl.editor.open(project.files[0]);
+				}
+			}
+			
+			project.files = _.filter(project.files, function(item) {
 				return filename!=item;
 			});
 			delete window.ftl.data.cache[filename];
+			
 		},
 		current: {
 			save:	function(callback) {
@@ -280,8 +297,8 @@
 					url:		'/api/projects/file/save',
 					params:		{
 						root:	window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].directory,
-						file:	window.ftl.data.settings.settings.file,
-						data:	window.ftl.data.cache[window.ftl.data.settings.settings.file]
+						file:	window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].file,
+						data:	window.ftl.data.cache[window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].file]
 					},
 					callback:	function(response) {
 						//console.log("/api/projects/file/save response",response);
@@ -292,12 +309,23 @@
 					}
 				});
 			},
-			saveAs:	function() {
+			saveAs:	function(callback) {
 				if (!window.ftl.data.settings) {
 					return false;
 				}
+				var project = window.ftl.data.settings.projects[window.ftl.data.settings.settings.project];
+				
+				if (!project.file) {
+					return false;
+				}
+				var filename	= window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].file;
+				var basename	= filename.split(/[\\/]/).pop();
+				var pathname	= filename.substring(0, filename.length-basename.length);
+				var outputname	= pathname+'copy_'+basename;
+				console.log("outputname",outputname);
 				window.ftl.dialog.open('save-as', {
-					name:	'copy_'+window.ftl.data.settings.settings.file,
+					title:		'Save As',
+					filename:	outputname,
 					callback:	function(name) {
 						// Open the file content
 						window.ftl.apicall({
@@ -305,13 +333,13 @@
 							params:		{
 								root:	window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].directory,
 								file:	name,
-								data:	window.ftl.data.cache[window.ftl.data.settings.settings.file]
+								data:	window.ftl.data.cache[window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].file]
 							},
 							callback:	function(response) {
 								console.log("/api/projects/file/save-as response",response);
-								if (callback) {
-									callback();
-								}
+								// Open the new file
+								window.ftl.editor.open(name, callback);
+								window.ftl.dialog.close('save-as');
 							}
 						});
 					}
@@ -326,12 +354,12 @@
 					url:		'/api/projects/file/remove',
 					params:		{
 						root:	window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].directory,
-						file:	window.ftl.data.settings.settings.file
+						file:	window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].file
 					},
 					callback:	function(response) {
 						//console.log("/api/projects/file/remove response",response);
 						// Close the file
-						window.ftl.editor.close(window.ftl.data.settings.settings.file);
+						window.ftl.editor.close(window.ftl.data.settings.projects[window.ftl.data.settings.settings.project].file);
 						if (callback) {
 							callback();
 						}
@@ -449,6 +477,31 @@
 					callback();
 				}
 			});
+		},
+		filetree: {
+			changeState:	function(type, id) {
+				if (!window.ftl.data.settings) {
+					return false;
+				}
+				var project = window.ftl.data.settings.projects[window.ftl.data.settings.settings.project];
+				if (!project.filetree) {
+					project.filetree = {};
+				}
+				if (!project.filetree.opened) {
+					project.filetree.opened = {};
+				}
+				switch (type) {
+					case "open":
+						project.filetree.opened[id] = true;
+					break;
+					case "close":
+						delete project.filetree.opened[id];
+					break;
+					case "select":
+						project.filetree.selected = id;
+					break;
+				}
+			}
 		}
 	};
 	

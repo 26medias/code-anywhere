@@ -29,11 +29,13 @@
 				selected:	'',
 				select:		function(id) {
 					$scope.safeApply(function() {
-						window.ftl.data.settings.settings.file	= id;
+						var project = window.ftl.data.settings.projects[window.ftl.data.settings.settings.project];
+						project.file	= id;
 					});
 				},
 				is:		function(id) {
-					return window.ftl.data.settings.settings.file	== id;
+					var project = window.ftl.data.settings.projects[window.ftl.data.settings.settings.project];
+					return project.file	== id;
 				}
 			};
 			

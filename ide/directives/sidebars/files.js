@@ -60,9 +60,14 @@
 									});
 									$(element).find('.tree').on('select_node.jstree', function(node, selected, event) {
 										if (selected.node.data && selected.node.data.type=='file') {
-											//console.log("Select", selected.node.id, selected);
 											window.ftl.editor.open(selected.node.id);
 										}
+									}).on('after_open.jstree', function(node, selected, event) {
+										window.ftl.data.filetree.changeState('open', selected.node.id);
+									}).on('after_close.jstree', function(node, selected, event) {
+										window.ftl.data.filetree.changeState('close', selected.node.id);
+									}).on('select_node.jstree', function(node, selected, event) {
+										window.ftl.data.filetree.changeState('select', selected.node.id);
 									});
 								});
 							});
