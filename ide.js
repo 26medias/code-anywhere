@@ -256,9 +256,22 @@ core.data = {
 				var p_id	= core.sid();
 				settings = {
 					projects:	{},
-					files:		[],
 					settings: {
 						sidebar: "projects"
+					},
+					lang: {
+						javascript: {
+							ext: ['js']
+						},
+						python: {
+							ext: ['py']
+						},
+						markdown: {
+							ext: ['md']
+						},
+						json: {
+							ext: ['json']
+						}
 					}
 				};
 				settings.projects[p_id] = {
